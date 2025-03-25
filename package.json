@@ -1,0 +1,30 @@
+{
+  "name": "markdown-to-png",
+  "version": "1.0.0",
+  "description": "A Node.js solution to convert Markdown files to PNG images",
+  "main": "src/index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "markdown",
+    "png",
+    "converter",
+    "image",
+    "node"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "markdown-it": "^14.1.0",
+    "markdown-it-table": "^4.1.1",
+    "node-html-to-image": "^5.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
