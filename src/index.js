@@ -1,57 +1,61 @@
 /**
- * Markdown to PNG Converter
- * A Node.js solution to convert Markdown files to PNG images
+ * Markdown to PNG 转换器
+ * 支持轻量级渲染和基于浏览器的渲染
  */
 
 const markdownParser = require('./services/markdown-parser');
 const htmlRenderer = require('./services/html-renderer');
+const sharpRenderer = require('./services/sharp-renderer');
 const { readFile, writeFile } = require('./utils/file-utils');
 
 /**
- * Convert markdown string to PNG
- * @param {string} markdown - Markdown content to convert
- * @param {Object} options - Conversion options
- * @returns {Promise<string|Buffer>} - PNG as base64 string, buffer, or file path
+ * 将 Markdown 字符串转换为 PNG
+ * @param {string} markdown - 要转换的 Markdown 内容
+ * @param {Object} options - 转换选项
+ * @returns {Promise<string|Buffer>} - PNG 作为 base64 字符串或 buffer
  */
 async function convert(markdown, options = {}) {
   try {
-    // Parse markdown to HTML
+    // 解析 Markdown 为 HTML
     const html = markdownParser.parse(markdown, options);
     
-    // Render HTML to PNG
-    const result = await htmlRenderer.render(html, options);
+    // 根据选项选择渲染器
+    const renderer = options.usePuppeteer ? htmlRenderer : sharpRenderer;
+    
+    // 渲染 HTML 为 PNG
+    const result = await renderer.render(html, options);
     
     return result;
   } catch (error) {
-    console.error('Error converting markdown to PNG:', error);
+    console.error('转换 Markdown 为 PNG 时出错:', error);
     throw error;
   }
 }
 
 /**
- * Convert markdown file to PNG
- * @param {string} inputPath - Path to markdown file
- * @param {string} outputPath - Path to save PNG file
- * @param {Object} options - Conversion options
- * @returns {Promise<string>} - Path to the generated PNG file
+ * 将 Markdown 文件转换为 PNG 文件
+ * @param {string} inputPath - Markdown 文件路径
+ * @param {string} outputPath - 保存 PNG 文件的路径
+ * @param {Object} options - 转换选项
+ * @returns {Promise<string>} - 生成的 PNG 文件路径
  */
 async function convertFile(inputPath, outputPath, options = {}) {
   try {
-    // Read markdown file
+    // 读取 Markdown 文件
     const markdown = await readFile(inputPath);
     
-    // Convert to PNG
+    // 转换为 PNG
     const result = await convert(markdown, { 
       ...options, 
       outputFormat: 'buffer' 
     });
     
-    // Write PNG file
+    // 写入 PNG 文件
     await writeFile(outputPath, result);
     
     return outputPath;
   } catch (error) {
-    console.error(`Error converting file ${inputPath} to PNG:`, error);
+    console.error(`转换文件 ${inputPath} 为 PNG 时出错:`, error);
     throw error;
   }
 }

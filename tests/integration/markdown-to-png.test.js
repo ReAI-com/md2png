@@ -60,10 +60,11 @@ describe('Markdown to PNG Integration', () => {
     }
   });
 
-  test('should convert markdown string to PNG buffer', async () => {
-    // This test verifies the core functionality
+  test('should convert markdown string to PNG buffer (using Puppeteer)', async () => {
+    // This test verifies the core functionality with Puppeteer renderer
     const result = await markdownToPng.convert(TEST_MARKDOWN, {
-      outputFormat: 'buffer'
+      outputFormat: 'buffer',
+      usePuppeteer: true // 使用 Puppeteer 渲染器
     });
 
     // Verify result is a buffer
@@ -73,10 +74,11 @@ describe('Markdown to PNG Integration', () => {
     expect(result.slice(0, 8).toString('hex')).toMatch(/89504e47/i);
   }, 30000); // Increase timeout for image rendering
 
-  test('should convert markdown string to base64 PNG', async () => {
-    // This test verifies base64 output format
+  test('should convert markdown string to base64 PNG (using Puppeteer)', async () => {
+    // This test verifies base64 output format with Puppeteer renderer
     const result = await markdownToPng.convert(TEST_MARKDOWN, {
-      outputFormat: 'base64'
+      outputFormat: 'base64',
+      usePuppeteer: true // 使用 Puppeteer 渲染器
     });
 
     // Verify result is a string
@@ -86,7 +88,7 @@ describe('Markdown to PNG Integration', () => {
     expect(() => Buffer.from(result, 'base64')).not.toThrow();
   }, 30000); // Increase timeout for image rendering
 
-  test('should convert markdown file to PNG file', async () => {
+  test('should convert markdown file to PNG file (using Puppeteer)', async () => {
     // Create test markdown file
     const markdownPath = path.join(TEST_DIR, 'test.md');
     const pngPath = path.join(TEST_DIR, 'test.png');
@@ -94,7 +96,9 @@ describe('Markdown to PNG Integration', () => {
     await fs.writeFile(markdownPath, TEST_MARKDOWN);
     
     // Convert file
-    await markdownToPng.convertFile(markdownPath, pngPath);
+    await markdownToPng.convertFile(markdownPath, pngPath, {
+      usePuppeteer: true // 使用 Puppeteer 渲染器
+    });
     
     // Verify PNG file exists
     const fileExists = await fs.access(pngPath).then(() => true).catch(() => false);
@@ -106,12 +110,13 @@ describe('Markdown to PNG Integration', () => {
     expect(fileContent.slice(0, 8).toString('hex')).toMatch(/89504e47/i);
   }, 30000); // Increase timeout for image rendering
 
-  test('should handle custom width and quality options', async () => {
-    // This test verifies customization options
+  test('should handle custom width and quality options (using Puppeteer)', async () => {
+    // This test verifies customization options with Puppeteer renderer
     const result = await markdownToPng.convert(TEST_MARKDOWN, {
       outputFormat: 'buffer',
       width: 1200,
-      quality: 95
+      quality: 95,
+      usePuppeteer: true // 使用 Puppeteer 渲染器
     });
 
     // Verify result is a buffer
