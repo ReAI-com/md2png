@@ -1,10 +1,9 @@
 /**
- * Markdown to PNG 转换器
- * 支持轻量级渲染和基于浏览器的渲染
+ * Markdown to PNG 转换器 (轻量级版本)
+ * 使用 Sharp 和 html-to-image 实现，无需浏览器依赖
  */
 
 const markdownParser = require('./services/markdown-parser');
-const htmlRenderer = require('./services/html-renderer');
 const sharpRenderer = require('./services/sharp-renderer');
 const { readFile, writeFile } = require('./utils/file-utils');
 
@@ -19,11 +18,8 @@ async function convert(markdown, options = {}) {
     // 解析 Markdown 为 HTML
     const html = markdownParser.parse(markdown, options);
     
-    // 根据选项选择渲染器
-    const renderer = options.usePuppeteer ? htmlRenderer : sharpRenderer;
-    
-    // 渲染 HTML 为 PNG
-    const result = await renderer.render(html, options);
+    // 使用 Sharp 渲染 HTML 为 PNG
+    const result = await sharpRenderer.render(html, options);
     
     return result;
   } catch (error) {
