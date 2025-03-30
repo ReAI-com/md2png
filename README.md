@@ -1,3 +1,187 @@
+# md2png-node
+
+一个将 Markdown 转换为 PNG 图像的 Node.js 库，支持自定义样式和高质量渲染。
+
+[English](#md2png-node) | 中文文档
+
+## 功能特点
+
+- ✅ 支持所有标准 Markdown 语法（标题、列表、代码块等）
+- ✅ 支持自定义 CSS 样式
+- ✅ 支持透明背景
+- ✅ 支持自定义图片质量
+- ✅ 支持输出为 Buffer 或 Base64
+- ✅ 使用 Puppeteer 实现高质量渲染
+- ✅ 完整的 TypeScript 支持
+
+## 安装
+
+```bash
+npm install md2png-node
+# 或者
+yarn add md2png-node
+# 或者
+pnpm add md2png-node
+```
+
+## 使用方法
+
+### 转换 Markdown 字符串
+
+```typescript
+import { convert } from 'md2png-node';
+
+const markdown = '# Hello World';
+const options = {
+  width: 800,
+  quality: 90,
+  transparent: false,
+  cssStyles: `
+    body { background-color: #f0f0f0; }
+  `
+};
+
+// 转换为 Buffer
+const buffer = await convert(markdown, { outputFormat: 'buffer' });
+
+// 转换为 Base64
+const base64 = await convert(markdown, { outputFormat: 'base64' });
+```
+
+### 转换 Markdown 文件
+
+```typescript
+import { convertFile } from 'md2png-node';
+
+const options = {
+  width: 800,
+  quality: 90,
+  transparent: false
+};
+
+// 转换文件
+await convertFile('input.md', 'output.png', options);
+```
+
+## API 参考
+
+### `convert(markdown, options)`
+
+将 Markdown 字符串转换为 PNG 图像。
+
+**参数：**
+- `markdown` (string): 要转换的 Markdown 内容
+- `options` (object, 可选): 转换选项
+  - `width` (number): 输出图片宽度，默认 800
+  - `quality` (number): 图片质量（1-100），默认 90
+  - `transparent` (boolean): 是否使用透明背景，默认 false
+  - `outputFormat` ('buffer' | 'base64'): 输出格式，默认 'buffer'
+  - `cssStyles` (string): 自定义 CSS 样式
+
+**返回值：**
+- Promise<Buffer | string>: 根据 outputFormat 返回 Buffer 或 base64 字符串
+
+### `convertFile(inputPath, outputPath, options)`
+
+将 Markdown 文件转换为 PNG 图像文件。
+
+**参数：**
+- `inputPath` (string): Markdown 文件路径
+- `outputPath` (string): 输出 PNG 文件路径
+- `options` (object, 可选): 与 convert() 相同的选项
+
+**返回值：**
+- Promise<string>: 输出文件路径
+
+## 示例
+
+### 转换 Markdown 文件
+
+```typescript
+import { convertFile } from 'md2png-node';
+
+async function convertFile() {
+  try {
+    await convertFile('example.md', 'example.png');
+    console.log('转换成功！');
+  } catch (error) {
+    console.error('转换失败:', error);
+  }
+}
+
+convertFile();
+```
+
+### 转换为 Base64
+
+```typescript
+import { convert } from 'md2png-node';
+
+async function convertToBase64() {
+  const markdown = `
+# Hello World
+
+这是一个 **Markdown** 示例，包含：
+- 列表
+- *格式化*
+- 更多内容！
+
+| 列1 | 列2 |
+|-----|-----|
+| 数据1 | 数据2 |
+  `;
+
+  try {
+    const base64Image = await convert(markdown, {
+      outputFormat: 'base64',
+      width: 600
+    });
+
+    console.log('Base64 图片:', base64Image.substring(0, 100) + '...');
+
+    // 在 HTML 中使用
+    // const imgTag = `<img src="data:image/png;base64,${base64Image}" alt="Markdown Image">`;
+  } catch (error) {
+    console.error('转换失败:', error);
+  }
+}
+
+convertToBase64();
+```
+
+## 工作原理
+
+转换器使用以下技术：
+
+1. **Markdown 解析**：使用 [markdown-it](https://github.com/markdown-it/markdown-it) 将 Markdown 解析为 HTML
+2. **HTML 渲染**：使用 [node-html-to-image](https://github.com/frinyvonnick/node-html-to-image) 和 [Puppeteer](https://github.com/puppeteer/puppeteer) 将 HTML 渲染为 PNG
+
+## 性能考虑
+
+- 对于大文件，建议：
+  - 调整图片质量（较低质量 = 更快渲染）
+  - 使用较小的宽度
+  - 为频繁渲染的内容实现缓存
+
+## 开发
+
+```bash
+# 安装依赖
+pnpm install
+
+# 运行测试
+pnpm test
+
+# 构建
+pnpm build
+```
+
+## 许可证
+
+MIT
+
+---
+
 # Markdown to PNG Converter
 
 A Node.js solution to convert Markdown files to PNG images with support for all standard Markdown syntax, embedded images, and tables.
