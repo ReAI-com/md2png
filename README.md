@@ -19,6 +19,10 @@ English | [中文文档](#markdown-to-png-转换器)
 
 ```bash
 npm install markdown-to-png
+# 或者
+yarn add markdown-to-png
+# 或者
+pnpm add markdown-to-png
 ```
 
 ## Usage
@@ -139,9 +143,9 @@ This is a **markdown** example with:
       outputFormat: 'base64',
       width: 600
     });
-    
+
     console.log('Base64 image:', base64Image.substring(0, 100) + '...');
-    
+
     // Use in HTML
     // const imgTag = `<img src="data:image/png;base64,${base64Image}" alt="Markdown Image">`;
   } catch (error) {
@@ -229,95 +233,73 @@ MIT
 
 ```bash
 npm install markdown-to-png
+# 或者
+yarn add markdown-to-png
+# 或者
+pnpm add markdown-to-png
 ```
 
 ## 使用方法
 
-### 基本用法
+### 转换 Markdown 字符串
 
-```javascript
-const markdownToPng = require('markdown-to-png');
+```typescript
+import { convert } from 'markdown-to-png';
 
-// 将 Markdown 字符串转换为 PNG buffer
-const markdown = '# 你好世界\n\n这是一个测试。';
-const pngBuffer = await markdownToPng.convert(markdown);
+const markdown = '# Hello World';
+const options = {
+  width: 800,
+  quality: 90,
+  transparent: false,
+  cssStyles: `
+    body { background-color: #f0f0f0; }
+  `
+};
 
-// 将 Markdown 文件转换为 PNG 文件
-await markdownToPng.convertFile('input.md', 'output.png');
+// 转换为 Buffer
+const buffer = await convert(markdown, { outputFormat: 'buffer' });
+
+// 转换为 Base64
+const base64 = await convert(markdown, { outputFormat: 'base64' });
 ```
 
-### 高级选项
+### 转换 Markdown 文件
 
-```javascript
-const markdownToPng = require('markdown-to-png');
+```typescript
+import { convertFile } from 'markdown-to-png';
 
-// 使用自定义选项进行转换
-const result = await markdownToPng.convert(markdown, {
-  outputFormat: 'base64',  // 'buffer', 'base64'
-  width: 800,              // 输出图像的宽度
-  height: null,            // 高度（null 为自动）
-  quality: 90,             // 图像质量（1-100）
-  transparent: false,      // 透明背景
-  cssStyles: customCss,    // 自定义 CSS 样式
-  usePuppeteer: false,     // 使用轻量级渲染器（默认：false）
-  markdownItOptions: {     // markdown-it 的选项
-    html: false,
-    breaks: true,
-    linkify: true,
-    typographer: true
-  }
-});
+const options = {
+  width: 800,
+  quality: 90,
+  transparent: false
+};
+
+// 转换文件
+await convertFile('input.md', 'output.png', options);
 ```
 
-## 渲染选项
+## 选项说明
 
-### 轻量级渲染器（默认）
+| 选项 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| width | number | 800 | 输出图片的宽度 |
+| quality | number | 90 | 输出图片的质量（1-100） |
+| transparent | boolean | false | 是否使用透明背景 |
+| outputFormat | 'buffer' \| 'base64' | 'buffer' | 输出格式 |
+| cssStyles | string | - | 自定义 CSS 样式 |
 
-轻量级渲染器针对服务器环境进行了优化，提供了多项优势：
+## 开发
 
-- **无浏览器依赖**：不需要安装 Chrome 或其他浏览器
-- **更快的启动时间**：消除了浏览器初始化时间
-- **更低的内存使用**：显著减少内存占用
-- **服务器友好**：在容器化和无服务器环境中表现良好
+```bash
+# 安装依赖
+pnpm install
 
-```javascript
-// 使用轻量级渲染器（默认）
-const result = await markdownToPng.convert(markdown, {
-  usePuppeteer: false // 这是默认设置
-});
+# 运行测试
+pnpm test
+
+# 构建
+pnpm build
 ```
-
-### Puppeteer 渲染器
-
-Puppeteer 渲染器使用无头浏览器进行渲染，在某些情况下可能更受欢迎：
-
-- **像素完美渲染**：使用 Chrome 的渲染引擎
-- **高级 CSS 支持**：更适合复杂的 CSS 布局
-- **Web 字体**：更好地支持自定义 Web 字体
-
-```javascript
-// 使用 Puppeteer 渲染器
-const result = await markdownToPng.convert(markdown, {
-  usePuppeteer: true
-});
-```
-
-## 性能考虑
-
-- 对于大文件，考虑以下优化方法：
-  - 使用轻量级渲染器（`usePuppeteer: false`）
-  - 调整图像质量（较低质量 = 更快渲染）
-  - 使用较小的宽度
-  - 为频繁渲染的内容实现缓存
-
-## 工作原理
-
-转换器分两个主要步骤工作：
-
-1. **Markdown 到 HTML**：使用 [markdown-it](https://github.com/markdown-it/markdown-it) 将 Markdown 解析为具有适当样式的 HTML
-2. **HTML 到 PNG**：提供两种渲染选项：
-   - **轻量级渲染器**（默认）：使用 [Sharp](https://sharp.pixelplumbing.com/) 和 [html-to-image](https://github.com/bubkoo/html-to-image) 与 [jsdom](https://github.com/jsdom/jsdom) 进行服务器友好的渲染，无需浏览器依赖
-   - **Puppeteer 渲染器**：使用 [node-html-to-image](https://github.com/frinyvonnick/node-html-to-image)（使用 Puppeteer）进行基于浏览器的渲染
 
 ## 许可证
 

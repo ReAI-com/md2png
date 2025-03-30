@@ -1,0 +1,27 @@
+# 源代码
+src/
+tests/
+
+# 配置文件
+.git/
+.gitignore
+.npmignore
+jest.config.js
+tsconfig.json
+
+# 开发工具
+.vscode/
+.idea/
+
+# 日志
+*.log
+npm-debug.log*
+
+# 环境
+.env
+.env.local
+.env.*.local
+
+# 系统文件
+.DS_Store
+Thumbs.db

@@ -1,22 +1,24 @@
-/**
- * Sharp 渲染器服务
- * 使用 node-html-to-image 将 HTML 转换为 PNG
- */
+import nodeHtmlToImage from 'node-html-to-image';
 
-const nodeHtmlToImage = require('node-html-to-image');
-const path = require('path');
+export interface RenderOptions {
+	width?: number;
+	quality?: number;
+	transparent?: boolean;
+	outputFormat?: 'buffer' | 'base64';
+	cssStyles?: string;
+}
 
 /**
  * 渲染 HTML 到 PNG
- * @param {string} html - 要渲染的 HTML 内容
- * @param {Object} options - 渲染选项
- * @returns {Promise<Buffer|string>} - PNG 作为 buffer 或 base64 字符串
+ * @param html - 要渲染的 HTML 内容
+ * @param options - 渲染选项
+ * @returns Promise<Buffer|string> - PNG 作为 buffer 或 base64 字符串
  */
-async function render(html, options = {}) {
+export async function render(html: string, options: RenderOptions = {}): Promise<Buffer | string> {
 	try {
 		// 默认选项
 		const defaultOptions = {
-			outputFormat: 'buffer', // 'buffer' 或 'base64'
+			outputFormat: 'buffer' as const, // 'buffer' 或 'base64'
 			width: options.width || 800,
 			quality: options.quality || 90,
 			transparent: options.transparent || false,
@@ -72,7 +74,3 @@ async function render(html, options = {}) {
 		throw error;
 	}
 }
-
-module.exports = {
-	render
-};
