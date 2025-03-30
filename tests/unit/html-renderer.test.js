@@ -26,7 +26,8 @@ describe('HTML Renderer', () => {
     const result = await htmlRenderer.render(html, { outputFormat: 'base64' });
     
     expect(typeof result).toBe('string');
-    expect(result).toBe('mock-image-data');
+    // The result should be the base64 encoding of 'mock-image-data'
+    expect(result).toBe('bW9jay1pbWFnZS1kYXRh');
   });
   
   test('should pass width option to renderer', async () => {
