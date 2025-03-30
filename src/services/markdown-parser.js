@@ -4,10 +4,10 @@
  */
 
 const MarkdownIt = require('markdown-it');
-const markdownItTable = require('markdown-it-table');
 
 /**
- * Parse markdown to HTML
+ * 解析 Markdown 为 HTML
+ * markdown-it 已内置表格支持，无需额外插件
  * @param {string} markdown - Markdown content to parse
  * @param {Object} options - Parsing options
  * @returns {string} - HTML content
@@ -24,9 +24,8 @@ function parse(markdown, options = {}) {
       ...options.markdownItOptions
     });
 
-    // Add table support
-    md.use(markdownItTable);
-
+    // 表格支持已内置在 markdown-it 中，无需额外插件
+    
     // Parse markdown to HTML
     const html = md.render(markdown);
 
