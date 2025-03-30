@@ -21,7 +21,6 @@
   "license": "MIT",
   "dependencies": {
     "markdown-it": "^14.1.0",
-    "markdown-it-table": "^4.1.1",
     "node-html-to-image": "^5.0.0"
   },
   "devDependencies": {
