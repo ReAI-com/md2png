@@ -1,0 +1,33 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 安装 Chromium 浏览器及其依赖
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    font-noto-cjk
+
+# 设置Puppeteer环境变量
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    DOCKER_ENV=true
+
+# 创建简单的测试脚本
+RUN echo '#!/bin/sh' > /test.sh && \
+    echo 'echo "Testing browser availability..."' >> /test.sh && \
+    echo 'echo "Chromium path: $PUPPETEER_EXECUTABLE_PATH"' >> /test.sh && \
+    echo 'if [ -f "$PUPPETEER_EXECUTABLE_PATH" ]; then' >> /test.sh && \
+    echo '  echo "✅ Browser executable exists"' >> /test.sh && \
+    echo 'else' >> /test.sh && \
+    echo '  echo "❌ Browser executable not found"' >> /test.sh && \
+    echo 'fi' >> /test.sh && \
+    echo '$PUPPETEER_EXECUTABLE_PATH --version' >> /test.sh && \
+    chmod +x /test.sh
+
+# 设置默认命令
+CMD ["/test.sh"]

@@ -1,0 +1,45 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 安装 Chromium 浏览器及其依赖
+# 注意: 文档包含完整说明和可能需要的额外依赖
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    font-noto-cjk \
+    dbus \
+    udev \
+    # 添加中文字体支持
+    ttf-dejavu \
+    ttf-liberation
+
+# 设置Puppeteer环境变量
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    DOCKER_ENV=true
+
+# 复制package.json进行依赖安装
+COPY package*.json ./
+
+# 安装依赖，跳过prepare脚本
+RUN npm install --production --ignore-scripts
+
+# 复制构建后的文件和测试脚本
+COPY dist/ ./dist/
+COPY examples/ ./examples/
+
+# 设置权限
+RUN chmod 777 /usr/bin/chromium-browser && \
+    mkdir -p /app/examples/output && \
+    chown -R node:node /app/examples/output
+
+# 切换到非root用户
+USER node
+
+# 设置默认命令
+CMD ["node", "examples/docker-test.js"]

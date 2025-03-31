@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  md2png:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./examples:/app/examples
+    environment:
+      - DOCKER_ENV=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+      - PUPPETEER_ARGS=--no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage
+    command: node examples/docker-test.js

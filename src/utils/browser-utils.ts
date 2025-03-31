@@ -1,5 +1,6 @@
 import { execSync } from 'child_process';
 import * as os from 'os';
+import * as fs from 'fs';
 
 /**
  * 检查系统上是否有可用的浏览器
@@ -7,6 +8,17 @@ import * as os from 'os';
  */
 export function isBrowserAvailable(): boolean {
   try {
+    // 如果设置了PUPPETEER_EXECUTABLE_PATH环境变量，直接返回true
+    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+      try {
+        // 检查指定的可执行文件是否存在
+        execSync(`ls ${process.env.PUPPETEER_EXECUTABLE_PATH}`, { stdio: 'pipe' });
+        return true;
+      } catch (e) {
+        // 忽略错误，继续检查其他路径
+      }
+    }
+
     const platform = os.platform();
 
     // 根据不同操作系统执行不同的检查命令
@@ -29,9 +41,22 @@ export function isBrowserAvailable(): boolean {
     } else if (platform === 'linux') {
       // Linux
       try {
-        execSync('which google-chrome || which chromium-browser || which firefox', { stdio: 'pipe' });
+        execSync('which google-chrome || which google-chrome-stable || which chromium-browser || which chromium || which firefox', { stdio: 'pipe' });
         return true;
       } catch (e) {
+        // 针对Alpine Linux的特殊检测
+        try {
+          // 检查Alpine Linux上的Chromium
+          if (fs.existsSync('/usr/bin/chromium-browser')) {
+            return true;
+          }
+          // 检查Alpine Linux上的Chrome
+          if (fs.existsSync('/usr/bin/chromium')) {
+            return true;
+          }
+        } catch (err) {
+          // 如果无法检查文件存在，忽略错误
+        }
         return false;
       }
     }

@@ -1,0 +1,70 @@
+FROM node:18-slim
+
+WORKDIR /app
+
+# 安装 Chrome 及其依赖
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libwayland-client0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    xdg-utils \
+    # 中文字体支持
+    fonts-noto-cjk \
+    # 清理
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 安装Chrome浏览器
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置Puppeteer环境变量
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
+    DOCKER_ENV=true
+
+# 验证Chrome安装
+RUN google-chrome-stable --version
+
+# 复制package.json进行依赖安装
+COPY package*.json ./
+
+# 安装依赖，跳过prepare脚本
+RUN npm install --production --ignore-scripts
+
+# 复制构建后的文件和测试脚本
+COPY dist/ ./dist/
+COPY examples/ ./examples/
+
+# 设置权限
+RUN chmod 777 /usr/bin/google-chrome-stable && \
+    mkdir -p /app/examples/output && \
+    chown -R node:node /app/examples/output
+
+# 切换到非root用户
+USER node
+
+# 设置默认命令
+CMD ["node", "examples/docker-test.js"]

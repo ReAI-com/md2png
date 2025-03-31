@@ -1,0 +1,40 @@
+services:
+  # Alpine环境 - 轻量级
+  alpine:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine
+    volumes:
+      - ./examples/output:/app/examples/output
+    environment:
+      - DOCKER_ENV=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+      - PUPPETEER_ARGS=--no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage,--disable-gpu
+    user: node
+
+  # Debian环境 - 更全面的依赖
+  debian:
+    build:
+      context: .
+      dockerfile: Dockerfile.debian
+    volumes:
+      - ./examples/output:/app/examples/output
+    environment:
+      - DOCKER_ENV=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+      - PUPPETEER_ARGS=--no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage
+    user: node
+
+  # 标准环境 - 用于实际使用
+  md2png:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./examples:/app/examples
+    environment:
+      - DOCKER_ENV=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+      - PUPPETEER_ARGS=--no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage
+    command: node examples/docker-test.js
+    user: node
