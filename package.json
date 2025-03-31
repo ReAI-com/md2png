@@ -11,7 +11,7 @@
     "install-cn.js"
   ],
   "bin": {
-    "md2png-setup-cn": "./install-cn.js"
+    "md2png-setup-cn": "install-cn.js"
   },
   "scripts": {
     "test": "jest --passWithNoTests",
