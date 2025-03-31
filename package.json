@@ -1,6 +1,6 @@
 {
   "name": "md2png-node",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A Node.js library to convert Markdown to PNG images with custom styles",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
