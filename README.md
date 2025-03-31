@@ -25,6 +25,98 @@ yarn add md2png-node
 pnpm add md2png-node
 ```
 
+### 中国用户安装指南
+
+如果您在中国区域安装时遇到网络问题，可以使用以下方法：
+
+1. **使用淘宝NPM镜像安装**：
+
+```bash
+# 使用npmmirror镜像安装
+npm install md2png-node --registry=https://registry.npmmirror.com
+# 或者
+yarn add md2png-node --registry=https://registry.npmmirror.com
+# 或者
+pnpm add md2png-node --registry=https://registry.npmmirror.com
+```
+
+2. **使用项目提供的便捷镜像切换命令**：
+
+```bash
+# 切换到中国镜像
+npm run use:cn
+# 然后正常安装
+npm install md2png-node
+
+# 查看当前使用的镜像
+npm run registry:current
+
+# 切换回官方镜像
+npm run use:npm
+```
+
+3. **配置项目的.npmrc文件**：
+
+创建或编辑项目根目录下的`.npmrc`文件：
+```
+# 使用中国镜像
+registry=https://registry.npmmirror.com/
+```
+
+4. **使用npmmirror-config-china工具全局配置镜像**：
+
+这个工具会自动配置npm以使用中国区镜像，包括各种二进制依赖：
+
+```bash
+# 全局安装并配置
+npm install -g npmmirror-config-china --registry=https://registry.npmmirror.com
+
+# 项目中本地配置
+npm install npmmirror-config-china --save-dev --registry=https://registry.npmmirror.com
+npx npmmirror-config-china
+```
+
+5. **使用NRM管理多个镜像源**：
+
+```bash
+# 安装NRM
+npm install -g nrm --registry=https://registry.npmmirror.com
+
+# 查看可用的镜像源
+nrm ls
+
+# 切换到淘宝镜像
+nrm use taobao
+
+# 切换回npm官方镜像
+nrm use npm
+```
+
+6. **如果仍然遇到依赖下载问题**：
+
+对于puppeteer等大型二进制依赖，可以设置环境变量：
+
+```bash
+# Linux/Mac
+export PUPPETEER_DOWNLOAD_HOST=https://npmmirror.com/mirrors/
+
+# Windows
+set PUPPETEER_DOWNLOAD_HOST=https://npmmirror.com/mirrors/
+```
+
+7. **使用项目内置的中国区安装脚本**:
+
+我们提供了一个专门为中国用户准备的安装脚本，可以一键配置所有镜像：
+
+```bash
+# 方法1: 全局安装后使用命令
+npm install -g md2png-node --registry=https://registry.npmmirror.com
+md2png-setup-cn
+
+# 方法2: 直接运行项目中的脚本
+node ./node_modules/md2png-node/install-cn.js
+```
+
 ### 系统要求
 
 本工具提供两种渲染模式：

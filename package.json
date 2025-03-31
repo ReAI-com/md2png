@@ -6,13 +6,24 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    ".npmrc",
+    "install-cn.js"
   ],
+  "bin": {
+    "md2png-setup-cn": "./install-cn.js"
+  },
   "scripts": {
     "test": "jest --passWithNoTests",
     "build": "tsc",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run build"
+    "prepublishOnly": "npm test && npm run build",
+    "publish:cn": "npm publish --registry=https://registry.npmmirror.com",
+    "use:cn": "npm config set registry https://registry.npmmirror.com",
+    "use:npm": "npm config set registry https://registry.npmjs.org/",
+    "registry:current": "npm config get registry",
+    "mirrors:setup": "npx npmmirror-config-china",
+    "postinstall": "node -e \"try { require('fs').chmodSync('./install-cn.js', '755') } catch(e){}\""
   },
   "keywords": [
     "markdown",
@@ -38,9 +49,15 @@
     "@types/jsdom": "^21.1.6",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "npmmirror-config-china": "^1.0.4"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "registries": {
+      "npmjs": "https://registry.npmjs.org/",
+      "npmmirror": "https://registry.npmmirror.com/"
+    }
   }
 }
