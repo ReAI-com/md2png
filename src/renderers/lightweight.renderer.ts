@@ -1,6 +1,6 @@
 import { Renderer, RendererOptions } from './renderer.interface';
-import { createCanvas } from 'canvas';
-import { JSDOM } from 'jsdom';
+import { Buffer } from 'buffer';
+import type { JSDOM } from 'jsdom'; // 仅导入类型，不导入实际模块
 
 /**
  * 轻量级渲染器
@@ -15,6 +15,24 @@ export class LightweightRenderer implements Renderer {
    */
   async render(html: string, options: RendererOptions = {}): Promise<Buffer | string> {
     try {
+      // 动态导入必要的依赖
+      let canvas: any;
+      let jsdomModule: { JSDOM: typeof JSDOM };
+
+      try {
+        canvas = await import('canvas');
+        jsdomModule = await import('jsdom') as { JSDOM: typeof JSDOM };
+      } catch (importError) {
+        throw new Error(
+          '轻量级渲染器需要canvas和jsdom依赖。\n' +
+          '请安装这些可选依赖：\n' +
+          'npm install canvas jsdom\n' +
+          '或者使用浏览器渲染模式：{ rendererType: "browser" }\n\n' +
+          '在Docker环境中，您可能需要安装额外的系统依赖，请参考README中的"Docker环境使用指南"部分。\n' +
+          `原始错误: ${importError instanceof Error ? importError.message : String(importError)}`
+        );
+      }
+
       // 默认选项
       const width = options.width || 800;
       const height = Math.floor(width * 1.4); // 初始高度估计，后面会自动调整
@@ -47,15 +65,16 @@ export class LightweightRenderer implements Renderer {
       `;
 
       // 使用jsdom创建虚拟DOM
-      const dom = new JSDOM(fullHtml);
+      const dom = new jsdomModule.JSDOM(fullHtml);
       const document = dom.window.document;
 
       // 解析DOM内容并估计需要的高度
       const contentHeight = this.estimateContentHeight(document.body, width);
 
       // 创建canvas
-      const canvas = createCanvas(width, contentHeight);
-      const ctx = canvas.getContext('2d');
+      const createCanvas = canvas.createCanvas;
+      const canvasInstance = createCanvas(width, contentHeight);
+      const ctx = canvasInstance.getContext('2d');
 
       // 设置背景
       if (!transparent) {
@@ -69,10 +88,10 @@ export class LightweightRenderer implements Renderer {
       // 根据输出格式返回结果
       if (options.outputFormat === 'base64') {
         // 使用 canvas.toDataURL 的可接受格式
-        const dataUrl = canvas.toDataURL();
+        const dataUrl = canvasInstance.toDataURL();
         return dataUrl.split(',')[1];
       } else {
-        return canvas.toBuffer('image/png');
+        return canvasInstance.toBuffer('image/png');
       }
     } catch (error) {
       console.error('轻量级渲染 HTML 到 PNG 时出错:', error);

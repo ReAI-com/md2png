@@ -126,9 +126,241 @@ node ./node_modules/md2png-node/install-cn.js
    - Microsoft Edge
    - Firefox
 
-2. **轻量级渲染模式**：无需安装浏览器，直接在Node.js环境中渲染，适合服务器环境或希望减少依赖的场景。
+> **重要提示**：轻量级渲染模式（无浏览器依赖）已在当前版本中暂时禁用，将在后续版本中重新加入。目前仅支持使用浏览器渲染模式。
 
-### Docker 环境
+### 轻量级渲染模式
+
+> **注意**: 轻量级渲染模式已在当前版本中暂时禁用，将在后续版本中重新加入。以下是该功能的预览介绍。
+
+<!--
+- **优点**：
+  - 无浏览器依赖，纯Node.js实现
+  - 资源消耗小，部署简单
+  - 适合服务器和容器环境
+
+- **缺点**：
+  - 渲染质量略逊于浏览器模式
+  - 复杂布局可能有差异
+  - 部分高级CSS特性支持有限
+
+- **适用场景**：
+  - 服务器和容器环境
+  - 简单Markdown内容渲染
+  - 需要最小化依赖
+
+使用方法：
+
+```typescript
+// 轻量级模式
+const options = {
+  rendererType: 'lightweight',
+  width: 800
+};
+
+// 浏览器模式(默认)
+const options = {
+  rendererType: 'browser',
+  width: 800
+};
+
+const buffer = await convert(markdown, options);
+```
+-->
+
+### Docker 环境使用指南
+
+当在 Docker 容器中运行时，可能会遇到 canvas 模块相关的错误（例如 `Error: Cannot find module '../build/Release/canvas.node'`）。这是因为 canvas 需要特定的系统依赖库才能正常工作。请按照以下步骤解决：
+
+#### 最小化安装（推荐）
+
+从版本1.1.0开始，我们实现了依赖优化，使您可以选择不安装可选依赖来避免 canvas 相关错误：
+
+1. **仅使用浏览器渲染模式**：
+   默认情况下，如果您只使用浏览器渲染模式（`rendererType: 'browser'`或不指定渲染器），则无需安装 canvas 依赖。
+
+   ```javascript
+   // 使用浏览器渲染模式，不需要canvas依赖
+   const options = {
+     rendererType: 'browser',  // 这是默认值，可以省略
+     width: 800
+   };
+
+   const buffer = await convert(markdown, options);
+   ```
+
+2. **安装时跳过可选依赖**：
+   ```bash
+   # 安装时跳过可选依赖
+   npm install md2png-node --no-optional
+
+   # 或使用yarn
+   yarn add md2png-node --ignore-optional
+
+   # 或使用pnpm
+   pnpm add md2png-node --no-optional
+   ```
+
+3. **Docker镜像最小化示例**：
+   ```dockerfile
+   FROM node:18-slim
+
+   # 仅安装浏览器依赖
+   RUN apt-get update && apt-get install -y \
+       chromium \
+       fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
+       --no-install-recommends \
+       && rm -rf /var/lib/apt/lists/*
+
+   # 设置Puppeteer配置
+   ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+   ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+   ENV PUPPETEER_ARGS="--no-sandbox --disable-setuid-sandbox"
+
+   WORKDIR /app
+   COPY package*.json ./
+
+   # 使用--no-optional参数安装依赖，跳过canvas
+   RUN npm install --no-optional
+
+   COPY . .
+
+   CMD ["node", "your-script.js"]
+   ```
+
+> **注意**：轻量级渲染器（`rendererType: 'lightweight'`）已在当前版本中暂时禁用。如果在代码中指定了`rendererType: 'lightweight'`，系统会自动使用浏览器渲染器替代，并输出警告信息。
+
+<!--
+> **注意**：如果您使用轻量级渲染器（`rendererType: 'lightweight'`），则仍需安装 canvas 及其系统依赖。在这种情况下，请参考下面的完整安装说明。
+-->
+
+#### 1. 在 Dockerfile 中安装必要的系统依赖
+
+**Ubuntu/Debian 系统：**
+```dockerfile
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+**Alpine 系统：**
+```dockerfile
+RUN apk add --no-cache \
+    build-base \
+    cairo-dev \
+    pango-dev \
+    jpeg-dev \
+    giflib-dev \
+    pixman-dev
+```
+
+**CentOS/RHEL 系统：**
+```dockerfile
+RUN yum install -y \
+    gcc-c++ \
+    cairo-devel \
+    pango-devel \
+    libjpeg-turbo-devel \
+    giflib-devel \
+    && yum clean all
+```
+
+#### 2. 完整的 Dockerfile 示例
+
+下面是一个完整的 Dockerfile 示例，包含了浏览器依赖：
+
+```dockerfile
+FROM node:18-slim
+
+# 安装浏览器依赖
+RUN apt-get update && apt-get install -y \
+    chromium \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置 Puppeteer 无沙箱模式
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV PUPPETEER_ARGS="--no-sandbox --disable-setuid-sandbox"
+
+WORKDIR /app
+COPY package*.json ./
+
+# 安装依赖
+RUN npm install
+
+COPY . .
+
+CMD ["node", "your-script.js"]
+```
+
+#### 3. 使用轻量级渲染模式
+
+如果不想安装浏览器依赖，可以在代码中使用轻量级渲染模式：
+
+```javascript
+const options = {
+  rendererType: 'lightweight',
+  width: 800
+};
+
+const buffer = await convert(markdown, options);
+```
+
+#### 4. 故障排除
+
+如果在安装依赖后仍然遇到 canvas 相关错误，可以尝试：
+
+1. **重新安装 canvas**：
+   ```bash
+   npm uninstall canvas
+   npm install canvas --build-from-source
+   ```
+
+2. **指定 canvas 版本**：
+   ```bash
+   npm install canvas@2.11.0
+   ```
+
+3. **使用中国镜像安装 canvas**：
+   ```bash
+   npm install canvas --canvas_binary_host_mirror=https://registry.npmmirror.com/-/binary/canvas/
+   ```
+
+4. **检查 Node.js 版本**：确保 Node.js 版本与 canvas 兼容（推荐 Node.js 18+）
+
+#### 5. 针对轻量级模式的 Dockerfile 示例
+
+如果只使用轻量级渲染模式，可以使用更简单的 Dockerfile：
+
+```dockerfile
+FROM node:18-slim
+
+# 仅安装 canvas 依赖
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+
+# 确保在代码中使用轻量级渲染模式
+# 例如: rendererType: 'lightweight'
+
+CMD ["node", "your-script.js"]
+```
 
 在 Docker 容器中运行时，可能需要为 Puppeteer 设置无沙箱模式。以下是两种方式：
 
@@ -750,6 +982,9 @@ MIT
 
 ### 轻量级渲染模式
 
+> **注意**: 轻量级渲染模式已在当前版本中暂时禁用，将在后续版本中重新加入。以下是该功能的预览介绍。
+
+<!--
 - **优点**：
   - 无浏览器依赖，纯Node.js实现
   - 资源消耗小，部署简单
@@ -764,6 +999,25 @@ MIT
   - 服务器和容器环境
   - 简单Markdown内容渲染
   - 需要最小化依赖
+
+使用方法：
+
+```typescript
+// 轻量级模式
+const options = {
+  rendererType: 'lightweight',
+  width: 800
+};
+
+// 浏览器模式(默认)
+const options = {
+  rendererType: 'browser',
+  width: 800
+};
+
+const buffer = await convert(markdown, options);
+```
+-->
 
 使用方法：
 
