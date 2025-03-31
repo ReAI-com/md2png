@@ -1,4 +1,5 @@
 import nodeHtmlToImage from 'node-html-to-image';
+import { isBrowserAvailable, getBrowserInstallationGuide } from '../utils/browser-utils';
 
 export interface RenderOptions {
 	width?: number;
@@ -6,6 +7,7 @@ export interface RenderOptions {
 	transparent?: boolean;
 	outputFormat?: 'buffer' | 'base64';
 	cssStyles?: string;
+	checkBrowser?: boolean;
 }
 
 /**
@@ -16,6 +18,15 @@ export interface RenderOptions {
  */
 export async function render(html: string, options: RenderOptions = {}): Promise<Buffer | string> {
 	try {
+		// 检查浏览器依赖
+		if (options.checkBrowser !== false) {
+			if (!isBrowserAvailable()) {
+				const errorMessage = '未检测到可用的浏览器，Markdown 转 PNG 功能需要浏览器支持。\n' +
+				                    getBrowserInstallationGuide();
+				throw new Error(errorMessage);
+			}
+		}
+
 		// 默认选项
 		const defaultOptions = {
 			outputFormat: 'buffer' as const, // 'buffer' 或 'base64'
@@ -60,7 +71,9 @@ export async function render(html: string, options: RenderOptions = {}): Promise
 			type: 'png',
 			transparent: renderOptions.transparent,
 			width: renderOptions.width,
-			puppeteerArgs: renderOptions.puppeteerArgs
+			puppeteerArgs: {
+				args: renderOptions.puppeteerArgs
+			}
 		});
 
 		// 根据输出格式返回结果

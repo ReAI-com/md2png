@@ -6,7 +6,7 @@ declare module 'node-html-to-image' {
 		transparent?: boolean;
 		width?: number;
 		height?: number;
-		puppeteerArgs?: string[];
+		puppeteerArgs?: string[] | { args: string[] };
 	}
 
 	export default function nodeHtmlToImage(options: Options): Promise<Buffer>;

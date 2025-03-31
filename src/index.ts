@@ -1,13 +1,10 @@
 import { parse } from './services/markdown-parser';
-import { render } from './services/sharp-renderer';
 import { readFile, writeFile } from './utils/file-utils';
+import { RendererFactory } from './renderers/renderer.factory';
+import { RendererOptions } from './renderers/renderer.interface';
 
-export interface ConvertOptions {
-	width?: number;
-	quality?: number;
-	transparent?: boolean;
-	outputFormat?: 'buffer' | 'base64';
-	cssStyles?: string;
+export interface ConvertOptions extends RendererOptions {
+	// 保持原有接口兼容性
 }
 
 /**
@@ -21,8 +18,11 @@ export async function convert(markdown: string, options: ConvertOptions = {}): P
 		// 解析 Markdown 为 HTML
 		const html = parse(markdown, options);
 
+		// 创建合适的渲染器
+		const renderer = RendererFactory.createRenderer(options);
+
 		// 渲染 HTML 为 PNG
-		const result = await render(html, options);
+		const result = await renderer.render(html, options);
 
 		return result;
 	} catch (error) {
@@ -58,3 +58,9 @@ export async function convertFile(inputPath: string, outputPath: string, options
 		throw error;
 	}
 }
+
+/**
+ * 检查浏览器依赖
+ * 如果系统中没有可用的浏览器，将显示安装指南
+ */
+export { isBrowserAvailable, getBrowserInstallationGuide } from './utils/browser-utils';
