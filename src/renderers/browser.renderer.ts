@@ -70,14 +70,29 @@ export class BrowserRenderer implements Renderer {
           <head>
             <meta charset="UTF-8">
             <style>
+              /* 定义字体引用 */
+              @font-face {
+                font-family: 'Apple Emoji';
+                src: local('Apple Color Emoji');
+              }
+
+              /* 全局字体设置，优先使用Apple系统字体 */
               body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                font-family: -apple-system, 'SF Pro', 'SF Pro Text', 'Helvetica Neue', BlinkMacSystemFont,
+                           'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans',
+                           sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
                 line-height: 1.6;
                 color: #333;
                 max-width: 100%;
                 padding: 20px;
                 margin: 0 auto;
                 background-color: ${renderOptions.transparent ? 'transparent' : 'white'};
+              }
+
+              /* 确保emoji正常显示，优先使用Apple emoji字体 */
+              .emoji {
+                font-family: 'Apple Color Emoji', 'Apple Emoji', 'Segoe UI Emoji',
+                            'Segoe UI Symbol', 'Noto Color Emoji';
               }
               ${options.cssStyles || ''}
             </style>

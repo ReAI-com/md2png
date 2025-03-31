@@ -40,7 +40,8 @@ RUN apk add --no-cache \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
-    font-noto-cjk
+    font-noto-cjk \
+    font-noto-emoji
 
 # 设置关键环境变量
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
@@ -129,4 +130,9 @@ convertMarkdown();
    font-noto-cjk (Alpine) 或 fonts-noto-cjk (Debian)
    ```
 
-更详细的信息请参考完整的[DOCKER.md](./DOCKER.md)文档。
+6. **如使用emoji表情符号，确认已安装emoji字体**:
+   ```
+   font-noto-emoji (Alpine) 或 fonts-noto-color-emoji (Debian)
+   ```
+
+更详细的信息请参考完整的[DOCKER.md](./DOCKER.md)文档和[EMOJI.md](./EMOJI.md)文档。

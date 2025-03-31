@@ -7,6 +7,12 @@ dist/
 
 # 测试输出
 coverage/
+*.png
+test-*.*
+*-test.*
+
+# 示例和测试目录
+examples/
 
 # 环境
 .env
@@ -24,3 +30,8 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# 临时文件
+tmp/
+temp/
+.tmp/

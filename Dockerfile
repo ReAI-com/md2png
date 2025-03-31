@@ -37,7 +37,9 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-freefont \
     # 添加中文字体支持
-    font-noto-cjk
+    font-noto-cjk \
+    # 添加emoji字体支持
+    font-noto-emoji
 
 # 设置Puppeteer使用已安装的Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \

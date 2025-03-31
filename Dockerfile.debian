@@ -28,6 +28,8 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     # 中文字体支持
     fonts-noto-cjk \
+    # emoji字体支持
+    fonts-noto-color-emoji \
     # 清理
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

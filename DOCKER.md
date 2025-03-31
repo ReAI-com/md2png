@@ -173,11 +173,20 @@ environment:
 
 ```dockerfile
 # Alpine
-RUN apk add --no-cache font-noto-cjk ttf-dejavu ttf-liberation
+RUN apk add --no-cache font-noto-cjk ttf-dejavu ttf-liberation font-noto-emoji
 
 # Debian/Ubuntu
-RUN apt-get update && apt-get install -y fonts-noto-cjk fonts-liberation
+RUN apt-get update && apt-get install -y fonts-noto-cjk fonts-liberation fonts-noto-color-emoji
 ```
+
+### Emoji 支持
+
+为确保 Emoji 表情符号正确显示，需要安装相应的字体：
+
+- Alpine: `font-noto-emoji`
+- Debian/Ubuntu: `fonts-noto-color-emoji`
+
+详细配置请参考 [Emoji 支持指南](./EMOJI.md)。
 
 ## 常见问题
 

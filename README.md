@@ -4,6 +4,16 @@
 
 [English](#md2png-node-english) | 中文文档
 
+## 最新版本
+
+**当前版本：v1.1.3** (2025-04-01)
+
+- ✨ 优化Emoji表情符号支持，包括Docker环境
+- ✨ 优先使用Apple系统字体，提升渲染质量
+- ✨ 完善Docker环境字体支持
+
+[查看完整版本历史](./CHANGELOG.md)
+
 ## 功能特点
 
 - ✅ 支持所有标准 Markdown 语法（标题、列表、代码块等）
@@ -14,6 +24,8 @@
 - ✅ 使用 Puppeteer 实现高质量渲染
 - ✅ 完整的 TypeScript 支持
 - ✅ 兼容 Docker 容器环境
+- ✅ 支持 Emoji 表情符号（包括在 Docker 环境中）
+- ✅ 优先使用 Apple 系统字体（自动回退到其他字体）
 
 ## 安装
 
@@ -143,6 +155,16 @@ A Node.js library to convert Markdown to PNG images with custom styles and high-
 
 English | [中文文档](#md2png-node)
 
+## Latest Version
+
+**Current Version: v1.1.3** (2025-04-01)
+
+- ✨ Enhanced emoji support including in Docker environment
+- ✨ Prioritized Apple system fonts for better rendering
+- ✨ Improved font support in Docker environments
+
+[View full version history](./CHANGELOG.md)
+
 ## Features
 
 - ✅ Support for all standard Markdown syntax
@@ -153,6 +175,8 @@ English | [中文文档](#md2png-node)
 - ✅ High-quality rendering with Puppeteer
 - ✅ Full TypeScript support
 - ✅ Docker container compatibility
+- ✅ Emoji support (including in Docker environment)
+- ✅ Prioritized Apple system fonts (with automatic fallback)
 
 ## Installation
 
