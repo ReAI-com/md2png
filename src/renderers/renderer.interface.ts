@@ -8,7 +8,7 @@ export interface RendererOptions {
   outputFormat?: 'buffer' | 'base64';
   cssStyles?: string;
   checkBrowser?: boolean;
-  rendererType?: 'browser' | 'lightweight';
+  rendererType?: 'browser';
   puppeteerArgs?: string[];
 }
 
